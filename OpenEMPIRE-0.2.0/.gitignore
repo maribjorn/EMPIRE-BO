@@ -1,5 +1,6 @@
 *.tab
 *sampling_key.csv
 Results/
+Data handler/
 
 __pycache__/
