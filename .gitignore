@@ -1,10 +1,8 @@
 *.tab
 *sampling_key.csv
 Results/
-Data handler/
+#Data handler/
 
-/OpenEMPIRE-0.2.0/EMPIRE_software_documentation.docx
-/OpenEMPIRE-0.2.0/EMPIRE_software_documentation.pdf
 
 
 __pycache__/
