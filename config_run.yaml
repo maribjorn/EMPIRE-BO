@@ -4,12 +4,12 @@
 USE_TEMP_DIR : True #
 temp_dir : './'
 version : 'europe_v51'
-Horizon : 2060
-NoOfScenarios : 5
-lengthRegSeason : 168
+Horizon : 2040
+NoOfScenarios : 1
+lengthRegSeason : 2
 discountrate : 0.05
 WACC : 0.05
-solver : "Xpress" # "Gurobi"  # #"CPLEX"
+solver : "Gurobi" # "Gurobi"  # #"CPLEX" #"Xpress"
 scenariogeneration : True #False
 fix_sample : False #True
 LOADCHANGEMODULE : False #True
@@ -19,6 +19,6 @@ n_cluster : 10
 moment_matching : False #True
 n_tree_compare : 20
 EMISSION_CAP : True #False
-IAMC_PRINT : True #False
+IAMC_PRINT : False #True
 WRITE_LP : False #True
 PICKLE_INSTANCE : False #True 
