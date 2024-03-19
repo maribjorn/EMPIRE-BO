@@ -1,7 +1,7 @@
 import pandas as pd
 
 # Read in the data
-busmap = pd.read_excel('data_pypsa/bus_map30.xlsx')
+busmap = pd.read_excel('bus_map30.xlsx')
 
 # Create the dictionary
 bus_dict = {}
