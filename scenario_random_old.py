@@ -267,18 +267,18 @@ def make_ws(data, regularSeasonHours, seasons):
         tot_data['Tot'] = all_data.loc[:,all_col].sum(axis=1)
         for col in ['time', 'year', 'month', 'dayofweek', 'hour']:
             tot_data[col] = all_data[col]
-        y = 2013
-        sample_base = year_season_filter(tot_data, y, s)
-        max_sample = sample_base.shape[0]
-        for j in range(max_sample - regularSeasonHours - 1):
-            sample = sample_base.iloc[j:j+regularSeasonHours]
-            ws_value = wasserstein_distance(tot_data['Tot'],
+        for y in range(2015,2020):
+            sample_base = year_season_filter(tot_data, y, s)
+            max_sample = sample_base.shape[0]
+            for j in range(max_sample - regularSeasonHours - 1):
+                sample = sample_base.iloc[j:j+regularSeasonHours]
+                ws_value = wasserstein_distance(tot_data['Tot'],
                                                 sample['Tot'])
-            df = pd.DataFrame(data={'Year': y,
+                df = pd.DataFrame(data={'Year': y,
                                         'Season': s,
                                         'SampleIndex': j,
                                         'Value': ws_value}, index=[0])
-            ws = pd.concat([ws, df], ignore_index = True)
+                ws = pd.concat([ws, df], ignore_index = True)
     return ws
 
 def make_mean(data, regularSeasonHours, seasons):
@@ -294,17 +294,17 @@ def make_mean(data, regularSeasonHours, seasons):
         tot_data['Tot'] = all_data.loc[:,all_col].sum(axis=1)
         for col in ['time', 'year', 'month', 'dayofweek', 'hour']:
             tot_data[col] = all_data[col]
-        y = 2013
-        sample_base = year_season_filter(tot_data, y, s)
-        max_sample = sample_base.shape[0]
-        for j in range(max_sample - regularSeasonHours - 1):
-            sample = sample_base.iloc[j:j+regularSeasonHours]
-            ws_value = np.mean(sample['Tot'])
-            df = pd.DataFrame(data={'Year': y,
+        for y in range(2015,2020):
+            sample_base = year_season_filter(tot_data, y, s)
+            max_sample = sample_base.shape[0]
+            for j in range(max_sample - regularSeasonHours - 1):
+                sample = sample_base.iloc[j:j+regularSeasonHours]
+                ws_value = np.mean(sample['Tot'])
+                df = pd.DataFrame(data={'Year': y,
                                         'Season': s,
                                         'SampleIndex': j,
                                         'Value': ws_value}, index=[0])
-            ws = pd.concat([ws, df], ignore_index=True)
+                ws = pd.concat([ws, df], ignore_index=True)
     return ws
 
 def make_filter_result(data1, data2, regularSeasonHours, seasons, n_cluster, filepath):
@@ -431,7 +431,7 @@ def generate_random_scenario(filepath, tab_file_path, scenarios, seasons,
                         sample_year = np.random.choice(valid_pick["Year"])
                         valid_pick = valid_pick[valid_pick['Year']==sample_year]
                     else:
-                        sample_year = 2013
+                        sample_year = np.random.choice(list(range(2015,2020)))
                     
                     # Set sample year according to key
                     
@@ -572,7 +572,7 @@ def generate_random_scenario(filepath, tab_file_path, scenarios, seasons,
                 
                 # Get peak sample year (2015-2019)
                     
-                sample_year = 2013 #np.random.choice(list(range(2013))) # sample_year = np.random.choice(list(range(2015,2020)))
+                sample_year = np.random.choice(list(range(2015,2020)))
                 
                 if fix_sample:
                     sample_year = sampling_key.loc[(i,scenario,'peak'),'Year']
