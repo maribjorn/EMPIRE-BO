@@ -3,7 +3,7 @@
 
 USE_TEMP_DIR : True #
 temp_dir : './'
-version : 'bolivia_v1'
+version : 'europe_v51'
 Horizon : 2040
 NoOfScenarios : 1
 lengthRegSeason : 2
