@@ -267,7 +267,7 @@ def make_ws(data, regularSeasonHours, seasons):
         tot_data['Tot'] = all_data.loc[:,all_col].sum(axis=1)
         for col in ['time', 'year', 'month', 'dayofweek', 'hour']:
             tot_data[col] = all_data[col]
-        for y in range(2015,2020):
+        for y in range(2013,2014):
             sample_base = year_season_filter(tot_data, y, s)
             max_sample = sample_base.shape[0]
             for j in range(max_sample - regularSeasonHours - 1):
@@ -294,7 +294,7 @@ def make_mean(data, regularSeasonHours, seasons):
         tot_data['Tot'] = all_data.loc[:,all_col].sum(axis=1)
         for col in ['time', 'year', 'month', 'dayofweek', 'hour']:
             tot_data[col] = all_data[col]
-        for y in range(2015,2020):
+        for y in range(2013,2014):
             sample_base = year_season_filter(tot_data, y, s)
             max_sample = sample_base.shape[0]
             for j in range(max_sample - regularSeasonHours - 1):
@@ -419,7 +419,7 @@ def generate_random_scenario(filepath, tab_file_path, scenarios, seasons,
                     ##REGULAR SEASONS##
                     ###################
                     
-                    # Get sample year (2015-2019) for each season/scenario 
+                    # Get sample year (2013-2019) for each season/scenario 
                     
                     if filter_use:
                         if cluster == n_cluster - 1:
@@ -431,7 +431,7 @@ def generate_random_scenario(filepath, tab_file_path, scenarios, seasons,
                         sample_year = np.random.choice(valid_pick["Year"])
                         valid_pick = valid_pick[valid_pick['Year']==sample_year]
                     else:
-                        sample_year = np.random.choice(list(range(2015,2020)))
+                        sample_year = np.random.choice(list(range(2013,2014)))
                     
                     # Set sample year according to key
                     
@@ -570,9 +570,10 @@ def generate_random_scenario(filepath, tab_file_path, scenarios, seasons,
                 ##PEAK SEASONS##
                 ################
                 
-                # Get peak sample year (2015-2019)
+                # Get peak sample year (2013-2019)
                     
-                sample_year = np.random.choice(list(range(2015,2020)))
+                # sample_year = np.random.choice(list(range(2013,2020)))
+                sample_year = np.random.choice(list(range(2013,2014)))
                 
                 if fix_sample:
                     sample_year = sampling_key.loc[(i,scenario,'peak'),'Year']
