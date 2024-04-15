@@ -630,23 +630,23 @@ def run_empire(name, tab_file_path, result_file_path, scenariogeneration, scenar
 
     #################################################################
 
-    def wind_farm_tranmission_cap_rule(model, n1, n2, i):
-        if n1 in model.OffshoreNode or n2 in model.OffshoreNode:
-            if (n1,n2) in model.BidirectionalArc:
-                if n1 in model.OffshoreNode:
-                    return model.transmissionInstalledCap[(n1,n2),i] <= sum(model.genInstalledCap[n1,g,i] for g in model.Generator if (n1,g) in model.GeneratorsOfNode)
-                else:
-                    return model.transmissionInstalledCap[(n1,n2),i] <= sum(model.genInstalledCap[n2,g,i] for g in model.Generator if (n2,g) in model.GeneratorsOfNode)
-            elif (n2,n1) in model.BidirectionalArc:
-                if n1 in model.OffshoreNode:
-                    return model.transmissionInstalledCap[(n2,n1),i] <= sum(model.genInstalledCap[n1,g,i] for g in model.Generator if (n1,g) in model.GeneratorsOfNode)
-                else:
-                    return model.transmissionInstalledCap[(n2,n1),i] <= sum(model.genInstalledCap[n2,g,i] for g in model.Generator if (n2,g) in model.GeneratorsOfNode)
-            else:
-                return Constraint.Skip
-        else:
-            return Constraint.Skip
-    model.wind_farm_transmission_cap = Constraint(model.Node, model.Node, model.PeriodActive, rule=wind_farm_tranmission_cap_rule)
+    #def wind_farm_tranmission_cap_rule(model, n1, n2, i):
+        # if n1 in model.OffshoreNode or n2 in model.OffshoreNode:
+        #     if (n1,n2) in model.BidirectionalArc:
+        #         # if n1 in model.OffshoreNode:
+        #         #     return model.transmissionInstalledCap[(n1,n2),i] <= sum(model.genInstalledCap[n1,g,i] for g in model.Generator if (n1,g) in model.GeneratorsOfNode)
+        #         # else:
+        #         return model.transmissionInstalledCap[(n1,n2),i] <= sum(model.genInstalledCap[n2,g,i] for g in model.Generator if (n2,g) in model.GeneratorsOfNode)
+        #     elif (n2,n1) in model.BidirectionalArc:
+        #         # if n1 in model.OffshoreNode:
+        #         #     return model.transmissionInstalledCap[(n2,n1),i] <= sum(model.genInstalledCap[n1,g,i] for g in model.Generator if (n1,g) in model.GeneratorsOfNode)
+        #         # else:
+        #         return model.transmissionInstalledCap[(n2,n1),i] <= sum(model.genInstalledCap[n2,g,i] for g in model.Generator if (n2,g) in model.GeneratorsOfNode)
+        #     else:
+        #         return Constraint.Skip
+        # else:
+            #return Constraint.Skip
+    #model.wind_farm_transmission_cap = Constraint(model.Node, model.Node, model.PeriodActive, rule=wind_farm_tranmission_cap_rule)
     #################################################################
 
     if EMISSION_CAP:
@@ -1028,7 +1028,7 @@ def run_empire(name, tab_file_path, result_file_path, scenariogeneration, scenar
             my_string.extend([value(sum(instance.seasScale[s]*instance.genOperational[n,g,h,i,w]/1000 for (n,g) in instance.GeneratorsOfNode for (s,h) in instance.HoursOfSeason)), 
             value(sum(instance.seasScale[s]*instance.genOperational[n,g,h,i,w]*instance.genCO2TypeFactor[g]*(3.6/instance.genEfficiency[g,i]) for (n,g) in instance.GeneratorsOfNode for (s,h) in instance.HoursOfSeason)/sum(instance.seasScale[s]*instance.genOperational[n,g,h,i,w] for (n,g) in instance.GeneratorsOfNode for (s,h) in instance.HoursOfSeason)), 
             value(sum(instance.dual[instance.FlowBalance[n,h,i,w]]/(instance.operationalDiscountrate*instance.seasScale[s]*instance.sceProbab[w]) for n in instance.Node for (s,h) in instance.HoursOfSeason)/value(len(instance.HoursOfSeason)*len(instance.Node))),
-            value(sum(instance.seasScale[s]*(instance.genCapAvail[n,g,h,w,i]*instance.genInstalledCap[n,g,i] - instance.genOperational[n,g,h,i,w])/1000 for (n,g) in instance.GeneratorsOfNode if g == 'Hydrorun-of-the-river' or g == 'Windonshore' or g == 'Windoffshore' or g == 'Solar' for (s,h) in instance.HoursOfSeason)), 
+            value(sum(instance.seasScale[s]*(instance.genCapAvail[n,g,h,w,i]*instance.genInstalledCap[n,g,i] - instance.genOperational[n,g,h,i,w])/1000 for (n,g) in instance.GeneratorsOfNode if g == 'Hydrorun-of-the-river' or g == 'Windonshore' or g == 'Solar' for (s,h) in instance.HoursOfSeason)), #or g == 'Windoffshore' 
             value(sum(instance.seasScale[s]*((1 - instance.storageDischargeEff[b])*instance.storDischarge[n,b,h,i,w] + (1 - instance.storageChargeEff[b])*instance.storCharge[n,b,h,i,w])/1000 for (n,b) in instance.StoragesOfNode for (s,h) in instance.HoursOfSeason)), 
             value(sum(instance.seasScale[s]*((1 - instance.lineEfficiency[n1,n2])*instance.transmisionOperational[n1,n2,h,i,w] + (1 - instance.lineEfficiency[n2,n1])*instance.transmisionOperational[n2,n1,h,i,w])/1000 for (n1,n2) in instance.BidirectionalArc for (s,h) in instance.HoursOfSeason))])
             writer.writerow(my_string)
@@ -1102,13 +1102,14 @@ def run_empire(name, tab_file_path, result_file_path, scenariogeneration, scenar
                            "Hydroregulated": "Hydro|Reservoir", 
                            "Hydrorun-of-the-river": "Hydro|Run-of-River", 
                            "Windonshore": "Wind|Onshore", 
-                           "Windoffshore": "Wind|Offshore",
-                           "Windoffshoregrounded": "Wind|Offshore", 
-                           "Windoffshorefloating": "Wind|Offshore", 
                            "Solar": "Solar|PV", "Waste": "Waste", 
                            "Bio10cofiring": "Coal|w/o CCS", 
                            "Bio10cofiringCCS": "Coal|w/ CCS", 
                            "LigniteCCSsup": "Lignite|w/ CCS"}
+        
+        # "Windoffshore": "Wind|Offshore",
+        #                    "Windoffshoregrounded": "Wind|Offshore", 
+        #                    "Windoffshorefloating": "Wind|Offshore", 
         
         #Make datetime from HoursOfSeason       
         seasonstart={"winter": '2020-01-01',

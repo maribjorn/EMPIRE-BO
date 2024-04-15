@@ -62,10 +62,10 @@ def sample_generator(data, regularSeasonHours, scenario, season, seasons,
                                                  regularSeasonHours,
                                                  sample_hour)
     generator_data = pd.DataFrame()
-    if generator=='Windoffshore' or generator=='Windoffshoregrounded' or generator=='Windoffshorefloating':
-        startNOnode = 2
-    else:
-        startNOnode = 1
+    # if generator=='Windoffshore' or generator=='Windoffshoregrounded' or generator=='Windoffshorefloating':
+    #     startNOnode = 2
+    # else:
+    startNOnode = 1
     for c in sample_data.columns:
         if c == "NO":
             for i in range(startNOnode, 6):
@@ -211,10 +211,10 @@ def sample_generator_peak(data, seasons, g, scenario,
                                                         peakSeasonHours, 
                                                         country_sample, 
                                                         overall_sample)
-    if g=='Windoffshore' or g=='Windoffshoregrounded' or g=='Windoffshorefloating':
-        startNOnode = 2
-    else:
-        startNOnode = 1
+    # if g=='Windoffshore' or g=='Windoffshoregrounded' or g=='Windoffshorefloating':
+    #     startNOnode = 2
+    # else:
+    startNOnode = 1
     for c in country_peak.columns:
         if c == "NO":
             for i in range(startNOnode, 6):
@@ -351,7 +351,7 @@ def generate_random_scenario(filepath, tab_file_path, scenarios, seasons,
     # Load all the raw scenario data
     solar_data = pd.read_csv(filepath + "/solar.csv")
     windonshore_data = pd.read_csv(filepath + "/windonshore.csv")
-    windoffshore_data = pd.read_csv(filepath + "/windoffshore.csv")
+    #windoffshore_data = pd.read_csv(filepath + "/windoffshore.csv")
     hydroror_data = pd.read_csv(filepath + "/hydroror.csv")
     hydroseasonal_data = pd.read_csv(filepath + "/hydroseasonal.csv")
     electricload_data = pd.read_csv(filepath + "/electricload.csv")
@@ -362,7 +362,7 @@ def generate_random_scenario(filepath, tab_file_path, scenarios, seasons,
     # Make datetime columns
     solar_data = make_datetime(solar_data, time_format)
     windonshore_data = make_datetime(windonshore_data, time_format)
-    windoffshore_data = make_datetime(windoffshore_data, time_format)
+    #windoffshore_data = make_datetime(windoffshore_data, time_format)
     hydroror_data = make_datetime(hydroror_data, time_format)
     hydroseasonal_data = make_datetime(hydroseasonal_data, time_format)
     electricload_data = make_datetime(electricload_data, time_format)
@@ -446,9 +446,9 @@ def generate_random_scenario(filepath, tab_file_path, scenarios, seasons,
                     windonshore_season = year_season_filter(windonshore_data,
                                                             sample_year,
                                                             s)
-                    windoffshore_season = year_season_filter(windoffshore_data,
-                                                             sample_year,
-                                                             s)
+                    # windoffshore_season = year_season_filter(windoffshore_data,
+                    #                                          sample_year,
+                    #                                          s)
                     hydroror_season = year_season_filter(hydroror_data,
                                                          sample_year,
                                                          s)
@@ -504,32 +504,32 @@ def generate_random_scenario(filepath, tab_file_path, scenarios, seasons,
                                                            generator="Windonshore",
                                                            sample_hour=sample_hour)],
                                          ignore_index=True)
-                    if north_sea:
-                        genAvail = pd.concat([genAvail,
-                                              sample_generator(data=windoffshore_season,
-                                                               regularSeasonHours=regularSeasonHours, 
-                                                               scenario=scenario, season=s,
-                                                               seasons=seasons, period=i,
-                                                               generator="Windoffshoregrounded", 
-                                                               sample_hour=sample_hour)],
-                                             ignore_index=True)
-                        genAvail = pd.concat([genAvail,
-                                              sample_generator(data=windoffshore_season,
-                                                               regularSeasonHours=regularSeasonHours, 
-                                                               scenario=scenario, season=s,
-                                                               seasons=seasons, period=i,
-                                                               generator="Windoffshorefloating", 
-                                                               sample_hour=sample_hour)],
-                                             ignore_index=True)
-                    else:
-                        genAvail = pd.concat([genAvail,
-                                              sample_generator(data=windoffshore_season,
-                                                               regularSeasonHours=regularSeasonHours, 
-                                                               scenario=scenario, season=s,
-                                                               seasons=seasons, period=i,
-                                                               generator="Windoffshore", 
-                                                               sample_hour=sample_hour)],
-                                             ignore_index=True)
+                    # if north_sea:
+                    #     genAvail = pd.concat([genAvail,
+                    #                           sample_generator(data=windoffshore_season,
+                    #                                            regularSeasonHours=regularSeasonHours, 
+                    #                                            scenario=scenario, season=s,
+                    #                                            seasons=seasons, period=i,
+                    #                                            generator="Windoffshoregrounded", 
+                    #                                            sample_hour=sample_hour)],
+                    #                          ignore_index=True)
+                    #     genAvail = pd.concat([genAvail,
+                    #                           sample_generator(data=windoffshore_season,
+                    #                                            regularSeasonHours=regularSeasonHours, 
+                    #                                            scenario=scenario, season=s,
+                    #                                            seasons=seasons, period=i,
+                    #                                            generator="Windoffshorefloating", 
+                    #                                            sample_hour=sample_hour)],
+                    #                          ignore_index=True)
+                    # else:
+                    #     genAvail = pd.concat([genAvail,
+                    #                           sample_generator(data=windoffshore_season,
+                    #                                            regularSeasonHours=regularSeasonHours, 
+                    #                                            scenario=scenario, season=s,
+                    #                                            seasons=seasons, period=i,
+                    #                                            generator="Windoffshore", 
+                    #                                            sample_hour=sample_hour)],
+                    #                          ignore_index=True)
                     genAvail = pd.concat([genAvail,
                                           sample_generator(data=hydroror_season,
                                                            regularSeasonHours=regularSeasonHours, 
@@ -589,7 +589,7 @@ def generate_random_scenario(filepath, tab_file_path, scenarios, seasons,
                 
                 solar_data_year = solar_data.loc[solar_data.year.isin([sample_year]), :]
                 windonshore_data_year = windonshore_data.loc[windonshore_data.year.isin([sample_year]), :]
-                windoffshore_data_year = windoffshore_data.loc[windoffshore_data.year.isin([sample_year]), :]
+                #windoffshore_data_year = windoffshore_data.loc[windoffshore_data.year.isin([sample_year]), :]
                 hydroror_data_year = hydroror_data.loc[hydroror_data.year.isin([sample_year]), :]
                 hydroseasonal_data_year = hydroseasonal_data.loc[hydroseasonal_data.year.isin([sample_year]), :]
                 electricload_data_year = electricload_data.loc[electricload_data.year.isin([sample_year]), :]
@@ -624,38 +624,38 @@ def generate_random_scenario(filepath, tab_file_path, scenarios, seasons,
                                                             overall_sample=overall_sample, 
                                                             country_sample=country_sample)],
                                      ignore_index=True)
-                if north_sea:
-                    genAvail = pd.concat([genAvail,
-                          sample_generator_peak(data=windoffshore_data_year,
-                                                seasons=seasons, 
-                                                g="Windoffshoregrounded", scenario=scenario,
-                                                period=i, 
-                                                regularSeasonHours=regularSeasonHours, 
-                                                peakSeasonHours=peakSeasonHours, 
-                                                overall_sample=overall_sample, 
-                                                country_sample=country_sample)],
-                         ignore_index=True)
-                    genAvail = pd.concat([genAvail,
-                          sample_generator_peak(data=windoffshore_data_year,
-                                                seasons=seasons, 
-                                                g="Windoffshorefloating", scenario=scenario,
-                                                period=i, 
-                                                regularSeasonHours=regularSeasonHours, 
-                                                peakSeasonHours=peakSeasonHours, 
-                                                overall_sample=overall_sample, 
-                                                country_sample=country_sample)],
-                         ignore_index=True)
-                else:
-                    genAvail = pd.concat([genAvail,
-                                          sample_generator_peak(data=windoffshore_data_year,
-                                                                seasons=seasons, 
-                                                                g="Windoffshore", scenario=scenario,
-                                                                period=i, 
-                                                                regularSeasonHours=regularSeasonHours, 
-                                                                peakSeasonHours=peakSeasonHours, 
-                                                                overall_sample=overall_sample, 
-                                                                country_sample=country_sample)],
-                                         ignore_index=True)
+                # if north_sea:
+                #     genAvail = pd.concat([genAvail,
+                #           sample_generator_peak(data=windoffshore_data_year,
+                #                                 seasons=seasons, 
+                #                                 g="Windoffshoregrounded", scenario=scenario,
+                #                                 period=i, 
+                #                                 regularSeasonHours=regularSeasonHours, 
+                #                                 peakSeasonHours=peakSeasonHours, 
+                #                                 overall_sample=overall_sample, 
+                #                                 country_sample=country_sample)],
+                #          ignore_index=True)
+                #     genAvail = pd.concat([genAvail,
+                #           sample_generator_peak(data=windoffshore_data_year,
+                #                                 seasons=seasons, 
+                #                                 g="Windoffshorefloating", scenario=scenario,
+                #                                 period=i, 
+                #                                 regularSeasonHours=regularSeasonHours, 
+                #                                 peakSeasonHours=peakSeasonHours, 
+                #                                 overall_sample=overall_sample, 
+                #                                 country_sample=country_sample)],
+                #          ignore_index=True)
+                # else:
+                #     genAvail = pd.concat([genAvail,
+                #                           sample_generator_peak(data=windoffshore_data_year,
+                #                                                 seasons=seasons, 
+                #                                                 g="Windoffshore", scenario=scenario,
+                #                                                 period=i, 
+                #                                                 regularSeasonHours=regularSeasonHours, 
+                #                                                 peakSeasonHours=peakSeasonHours, 
+                #                                                 overall_sample=overall_sample, 
+                #                                                 country_sample=country_sample)],
+                #                          ignore_index=True)
                 genAvail = pd.concat([genAvail,
                                       sample_generator_peak(data=hydroror_data_year,
                                                             seasons=seasons, 
