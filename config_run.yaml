@@ -6,7 +6,7 @@ temp_dir : './'
 version : 'bolivia_v1'
 Horizon : 2040
 NoOfScenarios : 1
-lengthRegSeason : 2
+lengthRegSeason : 168
 discountrate : 0.05
 WACC : 0.05
 solver : "Gurobi" # "Gurobi"  # #"CPLEX" #"Xpress"

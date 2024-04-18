@@ -105,7 +105,7 @@ def generate_tab_files(filepath, tab_file_path):
 
     #Reading Season
     GeneralExcelData = pd.read_excel(filepath + "/General.xlsx", sheet_name=None)
-    read_file(GeneralExcelData, 'seasonScale', [0, 1], tab_file_path, "General", skipheaders=2)
+    #read_file(GeneralExcelData, 'seasonScale', [0, 1], tab_file_path, "General", skipheaders=2)
     read_file(GeneralExcelData, 'CO2Cap', [0, 1], tab_file_path, "General", skipheaders=2)
     read_file(GeneralExcelData, 'CO2Price', [0, 1], tab_file_path, "General", skipheaders=2)
     

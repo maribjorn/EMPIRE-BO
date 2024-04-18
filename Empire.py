@@ -6,6 +6,7 @@ import sys
 import cloudpickle
 import time
 import os
+import pandas
 
 __author__ = "Stian Backe"
 __license__ = "MIT"
@@ -16,7 +17,7 @@ def run_empire(name, tab_file_path, result_file_path, scenariogeneration, scenar
                solver, temp_dir, FirstHoursOfRegSeason, FirstHoursOfPeakSeason, lengthRegSeason,
                lengthPeakSeason, Period, Operationalhour, Scenario, Season, HoursOfSeason,
                discountrate, WACC, LeapYearsInvestment, IAMC_PRINT, WRITE_LP,
-               PICKLE_INSTANCE, EMISSION_CAP, USE_TEMP_DIR, LOADCHANGEMODULE):
+               PICKLE_INSTANCE, EMISSION_CAP, USE_TEMP_DIR, LOADCHANGEMODULE, NoOfRegSeason, NoOfPeakSeason):
 
     if USE_TEMP_DIR:
         TempfileManager.tempdir = temp_dir
@@ -294,7 +295,17 @@ def run_empire(name, tab_file_path, result_file_path, scenariogeneration, scenar
 
     data.load(filename=scenariopath + "/" + 'Stochastic_HydroGenMaxSeasonalProduction.tab', param=model.maxRegHydroGenRaw, format="table")
     data.load(filename=scenariopath + "/" + 'Stochastic_StochasticAvailability.tab', param=model.genCapAvailStochRaw, format="table") 
-    data.load(filename=scenariopath + "/" + 'Stochastic_ElectricLoadRaw.tab', param=model.sloadRaw, format="table") 
+    data.load(filename=scenariopath + "/" + 'Stochastic_ElectricLoadRaw.tab', param=model.sloadRaw, format="table")
+
+    # Defining seasonal scale values and write them into a .tab file:
+    seasonScale = pandas.DataFrame(columns=["Season","seasonScale"],index=[x for x in range(0, NoOfRegSeason + NoOfPeakSeason)])
+    seasonScale["Season"] = Season
+    seasonScale["seasonScale"] = [(8760 - NoOfPeakSeason * lengthPeakSeason) / NoOfRegSeason / lengthRegSeason
+                                for x in range(NoOfRegSeason)] + [1 for x in range(NoOfPeakSeason)]
+    seasonScale.to_csv(tab_file_path + "/" + "General_seasonScale.tab", header=True, index=None, sep='\t', mode='w')
+
+    # Loading seasonal scale values
+    data.load(filename=tab_file_path + "/" + 'General_seasonScale.tab', param=model.seasScale, format="table")
 
     data.load(filename=tab_file_path + "/" + 'General_seasonScale.tab', param=model.seasScale, format="table") 
 

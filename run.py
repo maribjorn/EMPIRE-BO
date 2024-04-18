@@ -42,7 +42,7 @@ PICKLE_INSTANCE = UserRunTimeConfig["PICKLE_INSTANCE"]
 NoOfRegSeason = 4
 regular_seasons = ["winter", "spring", "summer", "fall"]
 NoOfPeakSeason = 2
-lengthPeakSeason = 2
+lengthPeakSeason = 24
 LeapYearsInvestment = 5
 time_format = "%d/%m/%Y %H:%M"
 if version in ["europe_v50"]:
@@ -189,4 +189,6 @@ run_empire(name = name,
            PICKLE_INSTANCE = PICKLE_INSTANCE, 
            EMISSION_CAP = EMISSION_CAP,
            USE_TEMP_DIR = USE_TEMP_DIR,
-           LOADCHANGEMODULE = LOADCHANGEMODULE)
+           LOADCHANGEMODULE = LOADCHANGEMODULE,
+           NoOfRegSeason = NoOfRegSeason,
+           NoOfPeakSeason = NoOfPeakSeason)
