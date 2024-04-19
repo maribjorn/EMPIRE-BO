@@ -307,7 +307,7 @@ def run_empire(name, tab_file_path, result_file_path, scenariogeneration, scenar
     # Loading seasonal scale values
     data.load(filename=tab_file_path + "/" + 'General_seasonScale.tab', param=model.seasScale, format="table")
 
-    data.load(filename=tab_file_path + "/" + 'General_seasonScale.tab', param=model.seasScale, format="table") 
+    #data.load(filename=tab_file_path + "/" + 'General_seasonScale.tab', param=model.seasScale, format="table") 
 
     if EMISSION_CAP:
         data.load(filename=tab_file_path + "/" + 'General_CO2Cap.tab', param=model.CO2cap, format="table")
