@@ -137,9 +137,10 @@ plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=6, fontsize=14)
 plt.savefig('figures/Production.png', bbox_inches='tight')
 
 period = '2035-2040'
+scenario_number = 'scenario1'
 regular_seasons = ['winter', 'spring', 'summer', 'fall']
 
-filtered_data = operational_data[(operational_data['Period'] == period) & (operational_data['Season'].isin(regular_seasons))]
+filtered_data = operational_data[(operational_data['Period'] == period) & (operational_data['Season'].isin(regular_seasons)) & (operational_data['Scenario'] == scenario_number)]
 snapshot_columns = [tech + '_MW' for tech in old_names]
 snapshot_columns.append('storDischarge_MW')
 snapshot_columns.append('storCharge_MW')
