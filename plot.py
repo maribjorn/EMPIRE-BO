@@ -34,15 +34,15 @@ blue1 = '#3EA1C0'
 NoOfPeakSeason = 2
 lengthPeakSeason = 24
 NoOfRegSeason = 4
-lengthRegSeason = 24
+lengthRegSeason = 168
 season_scale = [(8760 - NoOfPeakSeason * lengthPeakSeason) / NoOfRegSeason / lengthRegSeason
                             for x in range(NoOfRegSeason)] + [1 for x in range(NoOfPeakSeason)]
 new_names = ['CCGT',   'OCGT',  'Biomass',  'Oil'  ,'Wind', 'Solar', 'Hydro ror', 'Hydro storage', 'Geothermal']
 new_names_2 = ['CCGT',   'OCGT',  'Biomass',  'Oil'  ,'Wind', 'Solar', 'Hydro', 'Geothermal']
 old_names = ['GasCCGT',    'GasOCGT',  'Bio',   'Oilexisting',  'Windonshore',  'Solar'  ,'Hydrorun-of-the-river', 'Hydroregulated', 'Geo']
-scenario = '1'
+scenario = '5'
 date = '0422'
-time = '1632'
+time = '1718'
 file_path = 'Results/bolivia_v1_reg' + str(lengthRegSeason) + '_peak24_sce' + scenario + '_randomSGR_2024' + date + time + '/results_output_EuropePlot.csv'
 operational_data = pd.read_csv('Results/bolivia_v1_reg' + str(lengthRegSeason) + '_peak24_sce' + scenario + '_randomSGR_2024' + date + time +'/results_output_Operational.csv')
 
@@ -98,7 +98,6 @@ plt.yticks(fontsize=14)
 plt.grid(axis='y')
 plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=6, fontsize=14)
 plt.savefig('figures/InstalledCapacity.png', bbox_inches='tight')
-plt.show()
 
 
 # New installed capacity
@@ -116,7 +115,6 @@ plt.grid(axis='y')
 #plt.ylim(0, 1000)
 plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=6, fontsize=14)
 plt.savefig('figures/NewInstalledCapacity.png', bbox_inches='tight')
-plt.show()
 
 included_rows = [10,11,12,13]
 
