@@ -708,6 +708,7 @@ def run_empire(name, tab_file_path, result_file_path, scenariogeneration, scenar
         return sum(model.genInvCap[n,g,i] for g in model.Generator if (n,g) in model.GeneratorsOfNode and (t,g) in model.GeneratorsOfTechnology) - model.genMaxBuiltCap[n,t,i] <= 0
     model.investment_gen_cap = Constraint(model.Technology, model.Node, model.PeriodActive, rule=investment_gen_cap_rule)
 
+    
     #################################################################
 
     def investment_trans_cap_rule(model, n1, n2, i):
@@ -759,6 +760,20 @@ def run_empire(name, tab_file_path, result_file_path, scenariogeneration, scenar
             return Constraint.Skip
     model.power_energy_relate = Constraint(model.StoragesOfNode, model.PeriodActive, rule=power_energy_relate_rule)
 
+    #################################################################
+    
+    #ADDING CONSTRAINTS FOR TOTAL CAPACITY LIMITS IN PERIOD 1
+    def new_built_capacity_limit_rule(model, i):
+        if i == 1:  # Apply this constraint only for period 1
+            return sum(model.genInvCap[n, g, i] for (n, g) in model.GeneratorsOfNode) - 400 <= 0
+        else:
+            return Constraint.Skip  # Skip this constraint for other periods
+
+    # Add the constraint to the model
+    model.NewBuiltCapacityLimit = Constraint(model.PeriodActive, rule=new_built_capacity_limit_rule)
+
+
+    
     #################################################################
 
     #######
