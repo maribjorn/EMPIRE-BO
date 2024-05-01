@@ -43,7 +43,7 @@ NoOfRegSeason = 4
 regular_seasons = ["winter", "spring", "summer", "fall"]
 NoOfPeakSeason = 2
 lengthPeakSeason = 24
-LeapYearsInvestment = 5
+LeapYearsInvestment = 2
 time_format = "%d/%m/%Y %H:%M"
 if version in ["europe_v50"]:
     north_sea = False

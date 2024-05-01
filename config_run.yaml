@@ -7,7 +7,7 @@ version : 'bolivia_v1'
 Horizon : 2040
 NoOfScenarios : 1
 lengthRegSeason : 168
-discountrate : 0.05
+discountrate : 0.07
 WACC : 0.05
 solver : "Gurobi" # "Gurobi"  # #"CPLEX" #"Xpress"
 scenariogeneration : True #False
