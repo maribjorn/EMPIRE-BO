@@ -762,29 +762,28 @@ def run_empire(name, tab_file_path, result_file_path, scenariogeneration, scenar
 
     #################################################################
     
-    #ADDING CONSTRAINTS FOR TOTAL CAPACITY LIMITS IN PERIOD 1
+    #ADDING CONSTRAINTS FOR TOTAL CAPACITY LIMITS 
     def new_built_capacity_limit_rule(model, i):
         if i == 1:  # Apply this constraint only for period 1
             return sum(model.genInvCap[n, g, i] for (n, g) in model.GeneratorsOfNode) - 400 <= 0
         else:
             return sum(model.genInvCap[n, g, i] for (n, g) in model.GeneratorsOfNode) - 2000 <= 0
+
+    # Add the constraint to the model
     model.NewBuiltCapacityLimit = Constraint(model.PeriodActive, rule=new_built_capacity_limit_rule)
 
-    #################################################################
-    
-    # ADDING CONSTRAINT FOR THE ENERGY STORAGE TOTAL CAPACITY LIMIT
-    def new_built_capacity_energy_limit_rule(model,i):
-        return sum(model.storENInvCap[n, b, i] for (n, b) in model.StoragesOfNode) - 5400 <= 0
-    model.NewBuiltCapacityEnergyLimit = Constraint(model.PeriodActive, rule=new_built_capacity_energy_limit_rule)
-    
-    
-    #################################################################
-    
-    # ADDING CONSTRAINT FOR THE ENERGY STORAGE TOTAL CAPACITY LIMIT
-    def new_built_capacity_battery_limit_rule1(model,i):
-        return sum(model.storPWInvCap[n, b, i] for (n, b) in model.StoragesOfNode) - 900 <= 0
-    model.NewBuiltCapacityBatteryLimit1 = Constraint(model.PeriodActive, rule=new_built_capacity_battery_limit_rule1)
 
+#################################################################
+    
+    #ADDING CONSTRAINTS FOR TOTAL CAPACITY LIMITS 
+    def new_built_capacity_limit_rule(model, i):
+        if i == 1:  # Apply this constraint only for period 1
+            return sum(model.genInvCap[n, g, i] for (n, g) in model.GeneratorsOfNode) - 400 <= 0
+        else:
+            return sum(model.genInvCap[n, g, i] for (n, g) in model.GeneratorsOfNode) - 2000 <= 0
+
+    # Add the constraint to the model
+    model.NewBuiltCapacityLimit = Constraint(model.PeriodActive, rule=new_built_capacity_limit_rule)
 
     
     #################################################################
