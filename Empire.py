@@ -772,18 +772,18 @@ def run_empire(name, tab_file_path, result_file_path, scenariogeneration, scenar
 
     #################################################################
     
-    # ADDING CONSTRAINT FOR THE ENERGY STORAGE TOTAL CAPACITY LIMIT
-    def new_built_capacity_energy_limit_rule(model,i):
-        return sum(model.storENInvCap[n, b, i] for (n, b) in model.StoragesOfNode) - 5400 <= 0
-    model.NewBuiltCapacityEnergyLimit = Constraint(model.PeriodActive, rule=new_built_capacity_energy_limit_rule)
+    # # ADDING CONSTRAINT FOR THE ENERGY STORAGE TOTAL CAPACITY LIMIT
+    # def new_built_capacity_energy_limit_rule(model,i):
+    #     return sum(model.storENInvCap[n, b, i] for (n, b) in model.StoragesOfNode) - 5400 <= 0
+    # model.NewBuiltCapacityEnergyLimit = Constraint(model.PeriodActive, rule=new_built_capacity_energy_limit_rule)
     
     
-    #################################################################
+    # #################################################################
     
-    # ADDING CONSTRAINT FOR THE ENERGY STORAGE TOTAL CAPACITY LIMIT
-    def new_built_capacity_battery_limit_rule1(model,i):
-        return sum(model.storPWInvCap[n, b, i] for (n, b) in model.StoragesOfNode) - 900 <= 0
-    model.NewBuiltCapacityBatteryLimit1 = Constraint(model.PeriodActive, rule=new_built_capacity_battery_limit_rule1)
+    # # ADDING CONSTRAINT FOR THE ENERGY STORAGE TOTAL CAPACITY LIMIT
+    # def new_built_capacity_battery_limit_rule1(model,i):
+    #     return sum(model.storPWInvCap[n, b, i] for (n, b) in model.StoragesOfNode) - 900 <= 0
+    # model.NewBuiltCapacityBatteryLimit1 = Constraint(model.PeriodActive, rule=new_built_capacity_battery_limit_rule1)
 
 
     
@@ -894,7 +894,8 @@ def run_empire(name, tab_file_path, result_file_path, scenariogeneration, scenar
 
     f = open(result_file_path + "/" + 'results_objective.csv', 'w', newline='')
     writer = csv.writer(f)
-    writer.writerow(["Objective function value:" + str(value(instance.Obj))])
+    my_string = ["Objective function value:", str(value(instance.Obj))]
+    writer.writerow(my_string)
 
     f = open(result_file_path + "/" + 'results_output_gen.csv', 'w', newline='')
     writer = csv.writer(f)
