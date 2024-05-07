@@ -5,6 +5,7 @@ USE_TEMP_DIR : False #
 temp_dir : './'
 version : 'bolivia_v1'
 Horizon : 2040
+StartYear : 2025
 NoOfScenarios : 1
 lengthRegSeason : 168
 discountrate : 0.04
