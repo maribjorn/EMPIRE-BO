@@ -17,7 +17,7 @@ def run_empire(name, tab_file_path, result_file_path, scenariogeneration, scenar
                solver, temp_dir, FirstHoursOfRegSeason, FirstHoursOfPeakSeason, lengthRegSeason,
                lengthPeakSeason, Period, Operationalhour, Scenario, Season, HoursOfSeason,
                discountrate, WACC, LeapYearsInvestment, IAMC_PRINT, WRITE_LP,
-               PICKLE_INSTANCE, EMISSION_CAP, USE_TEMP_DIR, LOADCHANGEMODULE, NoOfRegSeason, NoOfPeakSeason):
+               PICKLE_INSTANCE, EMISSION_CAP, USE_TEMP_DIR, LOADCHANGEMODULE, NoOfRegSeason, NoOfPeakSeason, StartYear):
 
     if USE_TEMP_DIR:
         TempfileManager.tempdir = temp_dir
@@ -763,31 +763,50 @@ def run_empire(name, tab_file_path, result_file_path, scenariogeneration, scenar
     #################################################################
     
     #ADDING CONSTRAINTS FOR TOTAL CAPACITY LIMITS IN PERIOD 1
-    def new_built_capacity_limit_rule(model, i):
-        if i == 1:  # Apply this constraint only for period 1
-            return sum(model.genInvCap[n, g, i] for (n, g) in model.GeneratorsOfNode) - 400 <= 0
-        else:
-            return sum(model.genInvCap[n, g, i] for (n, g) in model.GeneratorsOfNode) - 2000 <= 0
-    model.NewBuiltCapacityLimit = Constraint(model.PeriodActive, rule=new_built_capacity_limit_rule)
+    #def new_built_capacity_limit_rule(model, i):
+    #    if i == 1:  # Apply this constraint only for period 1
+    #        return sum(model.genInvCap[n, g, i] for (n, g) in model.GeneratorsOfNode) - 400 <= 0
+    #    else:
+    #        return sum(model.genInvCap[n, g, i] for (n, g) in model.GeneratorsOfNode) - 2000 <= 0
+    #model.NewBuiltCapacityLimit = Constraint(model.PeriodActive, rule=new_built_capacity_limit_rule)
 
     #################################################################
     
-    # # ADDING CONSTRAINT FOR THE ENERGY STORAGE TOTAL CAPACITY LIMIT
-    # def new_built_capacity_energy_limit_rule(model,i):
-    #     return sum(model.storENInvCap[n, b, i] for (n, b) in model.StoragesOfNode) - 5400 <= 0
-    # model.NewBuiltCapacityEnergyLimit = Constraint(model.PeriodActive, rule=new_built_capacity_energy_limit_rule)
+    # ADDING CONSTRAINT FOR THE ENERGY STORAGE TOTAL CAPACITY LIMIT
+    #def new_built_capacity_energy_limit_rule(model,i):
+    #    return sum(model.storENInvCap[n, b, i] for (n, b) in model.StoragesOfNode) - 5400 <= 0
+    #model.NewBuiltCapacityEnergyLimit = Constraint(model.PeriodActive, rule=new_built_capacity_energy_limit_rule)
     
     
     # #################################################################
     
-    # # ADDING CONSTRAINT FOR THE ENERGY STORAGE TOTAL CAPACITY LIMIT
-    # def new_built_capacity_battery_limit_rule1(model,i):
-    #     return sum(model.storPWInvCap[n, b, i] for (n, b) in model.StoragesOfNode) - 900 <= 0
-    # model.NewBuiltCapacityBatteryLimit1 = Constraint(model.PeriodActive, rule=new_built_capacity_battery_limit_rule1)
+    # ADDING CONSTRAINT FOR THE ENERGY STORAGE TOTAL CAPACITY LIMIT
+    #def new_built_capacity_battery_limit_rule1(model,i):
+    #    return sum(model.storPWInvCap[n, b, i] for (n, b) in model.StoragesOfNode) - 900 <= 0
+    #model.NewBuiltCapacityBatteryLimit1 = Constraint(model.PeriodActive, rule=new_built_capacity_battery_limit_rule1)
 
 
     
     #################################################################
+    
+    #ADDING CONSTRAINTS FOR TOTAL CAPACITY LIMITS FOR BIO
+    #def installed_bio_cap_rule(model, t):
+    #    if t == "Bio":
+    #        return sum(model.genInstalledCap[n,g,i] for (n,g) in model.GeneratorsOfNode for i in model.PeriodActive) - 840 <= 0
+    #    else:
+    #        return Constraint.Skip
+    #model.installed_bio_cap = Constraint(model.Technology, rule=installed_bio_cap_rule)
+    
+    def new_installed_bio_cap_rule(model, i):
+        # Sum only the capacities of generators with 'Bio' technology
+       bio_generators = (g for g in model.Generator if ('Bio', g) in model.GeneratorsOfTechnology)
+       bio_nodes = (n for n in ['BO011', 'BO023', 'BO028'])
+       return sum(model.genInstalledCap[n, g, i] 
+                for g in bio_generators
+                for n in bio_nodes  # Assuming you have a Nodes set that needs to be linked to generators
+                ) - 840 <= 0
+    model.NewInstalledBioCap = Constraint(model.PeriodActive, rule=new_installed_bio_cap_rule)
+
 
     #######
     ##RUN##
@@ -818,7 +837,7 @@ def run_empire(name, tab_file_path, result_file_path, scenariogeneration, scenar
     print("StorageTypes: "+str(len(instance.Storage)))
     print("TotalStorages: "+str(len(instance.StoragesOfNode)))
     print("")
-    print("InvestmentUntil: "+str(value(2020+int(len(instance.PeriodActive)*LeapYearsInvestment))))
+    print("InvestmentUntil: "+str(value(StartYear+int(len(instance.PeriodActive)*LeapYearsInvestment))))
     print("Scenarios: "+str(len(instance.Scenario)))
     print("TotalOperationalHoursPerScenario: "+str(len(instance.Operationalhour)))
     print("TotalOperationalHoursPerInvYear: "+str(len(instance.Operationalhour)*len(instance.Scenario)))
@@ -889,8 +908,16 @@ def run_empire(name, tab_file_path, result_file_path, scenariogeneration, scenar
 
     inv_per = []
     for i in instance.PeriodActive:
-        my_string = str(value(2015+int(i)*LeapYearsInvestment))+"-"+str(value(2020+int(i)*LeapYearsInvestment))
+        my_string = str(value((StartYear-5)+int(i)*LeapYearsInvestment))+"-"+str(value(StartYear+int(i)*LeapYearsInvestment))
         inv_per.append(my_string)
+    
+    #inv_per = []
+    #for i in instance.PeriodActive:
+    #    # Adjusted to start from 2025 and go up by the leap year investment each time
+    #    start_year = StartYear + int(i) * LeapYearsInvestment
+    #    end_year = start_year + LeapYearsInvestment
+    #    my_string = str(start_year) + "-" + str(end_year)
+    #    inv_per.append(my_string)
 
     f = open(result_file_path + "/" + 'results_objective.csv', 'w', newline='')
     writer = csv.writer(f)
@@ -984,7 +1011,7 @@ def run_empire(name, tab_file_path, result_file_path, scenariogeneration, scenar
     writer = csv.writer(f)
     writer.writerow(["Node","RESGeneratorType","Period","ExpectedAnnualCurtailment_GWh"])
     for t in instance.Technology:
-        if t == 'Hydro_ror' or t == 'Wind_onshr' or t == 'Wind_offshr' or t == 'Solar':
+        if t == 'Hydro_ror' or t == 'Wind_onshr' or t == 'Solar': # or t == 'Wind_offshr' or t == 'Solar':
             for (n,g) in instance.GeneratorsOfNode:
                 if (t,g) in instance.GeneratorsOfTechnology: 
                     for i in instance.PeriodActive:
@@ -1152,12 +1179,12 @@ def run_empire(name, tab_file_path, result_file_path, scenariogeneration, scenar
         #                    "Windoffshorefloating": "Wind|Offshore", 
         
         #Make datetime from HoursOfSeason       
-        seasonstart={"winter": '2020-01-01',
-                     "spring": '2020-04-01',
-                     "summer": '2020-07-01',
-                     "fall": '2020-10-01',
-                     "peak1": '2020-11-01',
-                     "peak2": '2020-12-01'}
+        seasonstart={"winter": '2025-01-01',
+                     "spring": '2025-04-01',
+                     "summer": '2025-07-01',
+                     "fall": '2025-10-01',
+                     "peak1": '2025-11-01',
+                     "peak2": '2025-12-01'}
         
         seasonhours=[]
     
@@ -1187,11 +1214,11 @@ def run_empire(name, tab_file_path, result_file_path, scenariogeneration, scenar
 
         print("Writing standard output to .csv...")
         
-        f = pd.DataFrame(columns=["model", "scenario", "region", "variable", "unit", "subannual"]+[value(2020+(i)*instance.LeapYearsInvestment) for i in instance.PeriodActive])
+        f = pd.DataFrame(columns=["model", "scenario", "region", "variable", "unit", "subannual"]+[value(StartYear+(i)*instance.LeapYearsInvestment) for i in instance.PeriodActive])
 
         def row_write(df, region, variable, unit, subannual, input_value, scenario=Scenario, modelname=Modelname):
             df2 = pd.DataFrame([[modelname, scenario, region, variable, unit, subannual]+input_value],
-                               columns=["model", "scenario", "region", "variable", "unit", "subannual"]+[value(2020+(i)*instance.LeapYearsInvestment) for i in instance.PeriodActive])
+                               columns=["model", "scenario", "region", "variable", "unit", "subannual"]+[value(StartYear+(i)*instance.LeapYearsInvestment) for i in instance.PeriodActive])
             df = pd.concat([df, df2], ignore_index=True)
             return df
 
