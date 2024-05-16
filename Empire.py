@@ -919,6 +919,8 @@ def run_empire(name, tab_file_path, result_file_path, scenariogeneration, scenar
     #    my_string = str(start_year) + "-" + str(end_year)
     #    inv_per.append(my_string)
 
+    
+
     f = open(result_file_path + "/" + 'results_objective.csv', 'w', newline='')
     writer = csv.writer(f)
     my_string = ["Objective function value:", str(value(instance.Obj))]
@@ -926,14 +928,16 @@ def run_empire(name, tab_file_path, result_file_path, scenariogeneration, scenar
 
     f = open(result_file_path + "/" + 'results_output_gen.csv', 'w', newline='')
     writer = csv.writer(f)
-    my_string = ["Node","GeneratorType","Period","genInvCap_MW","genInstalledCap_MW","genExpectedCapacityFactor","DiscountedInvestmentCost_Euro","genExpectedAnnualProduction_GWh"]
+    my_string = ["Node","GeneratorType","Period","genInvCap_MW","genInstalledCap_MW","genExpectedCapacityFactor","DiscountedInvestmentCost_Euro","genExpectedAnnualProduction_GWh", "i", "empireFactor"]
     writer.writerow(my_string)
     for (n,g) in instance.GeneratorsOfNode:
         for i in instance.PeriodActive:
             my_string=[n,g,inv_per[int(i-1)],value(instance.genInvCap[n,g,i]),value(instance.genInstalledCap[n,g,i]), 
             value(sum(instance.sceProbab[w]*instance.seasScale[s]*instance.genOperational[n,g,h,i,w] for (s,h) in instance.HoursOfSeason for w in instance.Scenario)/(instance.genInstalledCap[n,g,i]*8760) if value(instance.genInstalledCap[n,g,i]) != 0 else 0), 
             value(instance.discount_multiplier[i]*instance.genInvCap[n,g,i]*instance.genInvCost[g,i]),
-            value(sum(instance.seasScale[s]*instance.sceProbab[w]*instance.genOperational[n,g,h,i,w]/1000 for (s,h) in instance.HoursOfSeason for w in instance.Scenario))]
+            value(sum(instance.seasScale[s]*instance.sceProbab[w]*instance.genOperational[n,g,h,i,w]/1000 for (s,h) in instance.HoursOfSeason for w in instance.Scenario)),
+            value(i),
+            value(1-(1+instance.discountrate)**-(min(value((len(instance.PeriodActive)-i+1)*LeapYearsInvestment), value(instance.genLifetime[g]))))/(1-(1/(1+instance.discountrate)))]
             writer.writerow(my_string)
     f.close()
 
