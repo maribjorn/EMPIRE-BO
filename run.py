@@ -43,7 +43,7 @@ PICKLE_INSTANCE = UserRunTimeConfig["PICKLE_INSTANCE"]
 NoOfRegSeason = 4
 regular_seasons = ["winter", "spring", "summer", "fall"]
 NoOfPeakSeason = 2
-lengthPeakSeason = 24
+lengthPeakSeason = 24 # Changed to 1 i case of validation 
 LeapYearsInvestment = 5
 time_format = "%d/%m/%Y %H:%M"
 if version in ["europe_v50"]:

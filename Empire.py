@@ -797,15 +797,110 @@ def run_empire(name, tab_file_path, result_file_path, scenariogeneration, scenar
     #        return Constraint.Skip
     #model.installed_bio_cap = Constraint(model.Technology, rule=installed_bio_cap_rule)
     
+    # def new_installed_bio_cap_rule(model, i):
+    #     # Sum only the capacities of generators with 'Bio' technology
+    #    bio_generators = (g for g in model.Generator if ('Bio', g) in model.GeneratorsOfTechnology)
+    #    bio_nodes = (n for n in ['BO011', 'BO023', 'BO028'])
+       
+    #    tot_installed_bio = sum(model.genInstalledCap[n, g, i] 
+    #             for g in bio_generators
+    #             for n in bio_nodes  
+    #             )
+       
+    #    # Print/log statements for debugging
+    #    print(f"Total Generated Energy: {tot_installed_bio}")
+       
+    #    return sum(model.genInstalledCap[n, g, i] 
+    #             for g in bio_generators
+    #             for n in bio_nodes  
+    #             ) - 840 <= 0
+    # model.NewInstalledBioCap = Constraint(model.PeriodActive, rule=new_installed_bio_cap_rule)
+    
+    # Log the total installed capacity for debugging
     def new_installed_bio_cap_rule(model, i):
         # Sum only the capacities of generators with 'Bio' technology
-       bio_generators = (g for g in model.Generator if ('Bio', g) in model.GeneratorsOfTechnology)
-       bio_nodes = (n for n in ['BO011', 'BO023', 'BO028'])
-       return sum(model.genInstalledCap[n, g, i] 
-                for g in bio_generators
-                for n in bio_nodes  # Assuming you have a Nodes set that needs to be linked to generators
-                ) - 840 <= 0
+        bio_generators = [g for g in model.Generator if ('Bio', g) in model.GeneratorsOfTechnology]
+        bio_nodes = ['BO011', 'BO023', 'BO028']
+        
+        tot_installed_bio = sum(model.genInstalledCap[(n, g), i] for g in bio_generators for n in bio_nodes)
+        
+        return tot_installed_bio - 840 <= 0
+
     model.NewInstalledBioCap = Constraint(model.PeriodActive, rule=new_installed_bio_cap_rule)
+    
+    ################################################################
+    
+    # WORKING FOR 720 hours, but then peak hours are worth the same as 12.964 regular hours
+    # import logging
+
+    # # Configure logging
+    # logging.basicConfig(level=logging.INFO)
+
+    # def genMaxProd_rule1(model, n, g, i, w):
+    #     # Summing over all operational hours and seasons
+    #     total_generated_energy = sum(
+    #         model.genOperational[n, g, h, i, w]
+    #         for h in model.Operationalhour
+    #     )
+        
+    #     # Capacity available and installed capacity
+    #     gen_cap_avail = sum(model.genCapAvail[n, g, h, w, i] for h in model.Operationalhour)
+    #     installed_capacity = model.genInstalledCap[n, g, i]
+        
+    #     # Log debugging information
+    #     logging.info(f"Node: {n}, Generator: {g}, Period: {i}, Scenario: {w}")
+    #     logging.info(f"genCapAvail: {gen_cap_avail}")
+    #     logging.info(f"genInstalledCap: {installed_capacity}")
+    #     logging.info(f"genOperational: {total_generated_energy}")
+        
+    #     # Max generation production constraint
+    #     return total_generated_energy <= gen_cap_avail * installed_capacity
+
+    # # Apply the constraint to generators of node, periods, and scenarios
+    # model.maxGenProduction1 = Constraint(model.GeneratorsOfNode, model.PeriodActive, model.Scenario, rule=genMaxProd_rule1)
+
+    import logging
+
+    # Configure logging
+    logging.basicConfig(level=logging.INFO)
+    
+    # Initialize GeneratorsOfBio after the model has been instantiated
+    def initialize_generators_of_bio(model):
+        return [(n, g) for (n, g) in model.GeneratorsOfNode if ('Bio', g) in model.GeneratorsOfTechnology]
+
+    model.GeneratorsOfBio = Set(initialize=initialize_generators_of_bio, dimen=2)
+    # Define the regular and peak seasons
+    regular_seasons = ["winter", "spring", "summer", "fall"]
+    peak_seasons = ["peak1", "peak2"]
+
+    # Subsets of regular and peak seasons
+    model.regular_seasons = Set(initialize=regular_seasons)
+    model.peak_seasons = Set(initialize=peak_seasons)
+
+    # Use value(sum(instance.sceProbab[w]*instance.seasScale[s]*instance.genOperational[n,g,h,i,w] for (s,h) in instance.HoursOfSeason for w in instance.Scenario)/(instance.genInstalledCap[n,g,i]*8760) if value(instance.genInstalledCap[n,g,i]) != 0 else 0), to create a capacity factor constraint for all bio generators
+    def genMaxProd_rule1(model, n, g, i, w):
+        # Summing over all operational hours and seasons
+        total_generated_energy = sum(
+            model.genOperational[n, g, h, i, w]*model.seasScale[s]
+            for [s, h] in model.HoursOfSeason if s in model.regular_seasons
+        )
+        
+        # Capacity available and installed capacity
+        gen_cap_avail = 0.72
+        installed_capacity = model.genInstalledCap[n, g, i]
+        
+        # Log debugging information
+        logging.info(f"Node: {n}, Generator: {g}, Period: {i}, Scenario: {w}")
+        
+        # Max generation production constraint
+        return total_generated_energy <= gen_cap_avail * installed_capacity * 168*4*12.964
+
+    # Apply the constraint to generators of node, periods, and scenarios
+    model.maxGenProduction1 = Constraint(model.GeneratorsOfBio, model.PeriodActive, model.Scenario, rule=genMaxProd_rule1)
+
+
+
+
 
 
     #######
@@ -908,7 +1003,7 @@ def run_empire(name, tab_file_path, result_file_path, scenariogeneration, scenar
 
     inv_per = []
     for i in instance.PeriodActive:
-        my_string = str(value((StartYear-5)+int(i)*LeapYearsInvestment))+"-"+str(value(StartYear+int(i)*LeapYearsInvestment))
+        my_string = str(value((StartYear-LeapYearsInvestment)+int(i)*LeapYearsInvestment))+"-"+str(value(StartYear+int(i)*LeapYearsInvestment))
         inv_per.append(my_string)
     
     #inv_per = []
