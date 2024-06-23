@@ -807,6 +807,39 @@ def run_empire(name, tab_file_path, result_file_path, scenariogeneration, scenar
                 ) - 840 <= 0
     model.NewInstalledBioCap = Constraint(model.PeriodActive, rule=new_installed_bio_cap_rule)
 
+   
+    # Initialize GeneratorsOfBio after the model has been instantiated
+    def initialize_generators_of_bio(model):
+        return [(n, g) for (n, g) in model.GeneratorsOfNode if ('Bio', g) in model.GeneratorsOfTechnology]
+
+    model.GeneratorsOfBio = Set(initialize=initialize_generators_of_bio, dimen=2)
+    # Define the regular and peak seasons
+    regular_seasons = ["winter", "spring", "summer", "fall"]
+    peak_seasons = ["peak1", "peak2"]
+
+    # Subsets of regular and peak seasons
+    model.regular_seasons = Set(initialize=regular_seasons)
+    model.peak_seasons = Set(initialize=peak_seasons)
+
+    # Use value(sum(instance.sceProbab[w]*instance.seasScale[s]*instance.genOperational[n,g,h,i,w] for (s,h) in instance.HoursOfSeason for w in instance.Scenario)/(instance.genInstalledCap[n,g,i]*8760) if value(instance.genInstalledCap[n,g,i]) != 0 else 0), to create a capacity factor constraint for all bio generators
+    def genMaxProd_rule1(model, n, g, i, w):
+        # Summing over all operational hours and seasons
+        total_generated_energy = sum(
+            model.genOperational[n, g, h, i, w]*model.seasScale[s]
+            for [s, h] in model.HoursOfSeason if s in model.regular_seasons
+        )
+    
+        # Capacity available and installed capacity
+        gen_cap_avail = 0.72
+        installed_capacity = model.genInstalledCap[n, g, i]
+    
+    
+        # Max generation production constraint
+        return total_generated_energy <= gen_cap_avail * installed_capacity * 168*4*12.964
+
+    # Apply the constraint to generators of node, periods, and scenarios
+    model.maxGenProduction1 = Constraint(model.GeneratorsOfBio, model.PeriodActive, model.Scenario, rule=genMaxProd_rule1)
+
 
     #######
     ##RUN##

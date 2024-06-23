@@ -410,7 +410,6 @@ def generate_random_scenario(filepath, tab_file_path, scenarios, seasons,
         sampling_key = sampling_key.set_index(['Period','Scenario','Season'])
     else:
         sampling_key = pd.DataFrame(columns=['Period','Scenario','Season','Year','Hour'])
-        sampling_key_single = pd.DataFrame(columns=['Period','Scenario','Season','Year','Hour'])
     
     for tree in range(n_tree_compare):
         for i in range(1,Periods+1):
@@ -432,8 +431,7 @@ def generate_random_scenario(filepath, tab_file_path, scenarios, seasons,
                         sample_year = np.random.choice(valid_pick["Year"])
                         valid_pick = valid_pick[valid_pick['Year']==sample_year]
                     else:
-                        sample_year = np.random.choice([2011,2013,2018])
-                        sample_year_single = np.random.choice(list(range(2013,2014)))
+                        sample_year = np.random.choice(list(range(2013,2014)))
                     
                     # Set sample year according to key
                     
@@ -452,13 +450,13 @@ def generate_random_scenario(filepath, tab_file_path, scenarios, seasons,
                     #                                          sample_year,
                     #                                          s)
                     hydroror_season = year_season_filter(hydroror_data,
-                                                         sample_year_single,
+                                                         sample_year,
                                                          s)
                     hydroseasonal_season = year_season_filter(hydroseasonal_data,
-                                                              sample_year_single,
+                                                              sample_year,
                                                               s)
                     electricload_season = year_season_filter(electricload_data,
-                                                             sample_year_single,
+                                                             sample_year,
                                                              s)
 
                     if LOADCHANGEMODULE:
@@ -488,12 +486,6 @@ def generate_random_scenario(filepath, tab_file_path, scenarios, seasons,
                                                 'Year': sample_year,
                                                 'Hour': sample_hour}, index=[0])
                         sampling_key = pd.concat([sampling_key, df], ignore_index=True)
-                        df_single = pd.DataFrame(data={'Period': i,
-                                                       'Scenario': scenario,
-                                                       'Season': s,
-                                                       'Year': sample_year_single,
-                                                       'Hour': sample_hour}, index=[0])
-                        sampling_key_single = pd.concat([sampling_key_single, df_single], ignore_index=True)
                     
                     # Sample generator availability for regular seasons
                     genAvail = pd.concat([genAvail,
@@ -581,8 +573,7 @@ def generate_random_scenario(filepath, tab_file_path, scenarios, seasons,
                 # Get peak sample year (2013-2019)
                     
                 # sample_year = np.random.choice(list(range(2013,2020)))
-                sample_year_single = np.random.choice(list(range(2013,2014)))
-                sample_year = np.random.choice([2011,2013,2018])
+                sample_year = np.random.choice(list(range(2013,2014)))
                 
                 if fix_sample:
                     sample_year = sampling_key.loc[(i,scenario,'peak'),'Year']
@@ -593,21 +584,15 @@ def generate_random_scenario(filepath, tab_file_path, scenarios, seasons,
                                             'Year': sample_year,
                                             'Hour': 0}, index=[0])
                     sampling_key = pd.concat([sampling_key, df], ignore_index=True)
-                    df_single = pd.DataFrame(data={'Period': i,
-                                                    'Scenario': scenario,
-                                                    'Season': 'peak',
-                                                    'Year': sample_year_single,
-                                                    'Hour': 0}, index=[0])
-                    sampling_key_single = pd.concat([sampling_key_single, df_single], ignore_index=True)
              
                 # Filter out the hours within the sample year
                 
                 solar_data_year = solar_data.loc[solar_data.year.isin([sample_year]), :]
                 windonshore_data_year = windonshore_data.loc[windonshore_data.year.isin([sample_year]), :]
                 #windoffshore_data_year = windoffshore_data.loc[windoffshore_data.year.isin([sample_year]), :]
-                hydroror_data_year = hydroror_data.loc[hydroror_data.year.isin([sample_year_single]), :]
-                hydroseasonal_data_year = hydroseasonal_data.loc[hydroseasonal_data.year.isin([sample_year_single]), :]
-                electricload_data_year = electricload_data.loc[electricload_data.year.isin([sample_year_single]), :]
+                hydroror_data_year = hydroror_data.loc[hydroror_data.year.isin([sample_year]), :]
+                hydroseasonal_data_year = hydroseasonal_data.loc[hydroseasonal_data.year.isin([sample_year]), :]
+                electricload_data_year = electricload_data.loc[electricload_data.year.isin([sample_year]), :]
 
                 if LOADCHANGEMODULE:
                 	elecLoadMod_data_year = elecLoadMod_period.loc[elecLoadMod_period.year.isin([sample_year])]
@@ -787,9 +772,6 @@ def generate_random_scenario(filepath, tab_file_path, scenarios, seasons,
     sampling_key.to_csv(
         tab_file_path + "/sampling_key" + '.csv',
         header=True, index=None, mode='w')        
-    sampling_key_single.to_csv(
-        tab_file_path + "/sampling_key_single" + '.csv',
-        header=True, index=None, mode='w')
 
     genAvail.to_csv(
         tab_file_path + "/Stochastic_StochasticAvailability" + '.tab',
